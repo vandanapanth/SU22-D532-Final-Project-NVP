@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Road Safety Analysis</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script crossorigin="anonymous"
+	        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" >
+	    </script>
+        <script>$(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        </script>
+        <style>
+            body {
+              position: relative; 
+            }
+        </style>
+        <style>
+             .btn {
+                color: #efe8e8;
+                background-color: #2f2e2e
+            }
+			
+			.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+        </style>
+
+    </head>
+
+    <body data-spy="scroll" data-target="#mynavbar" data-offset="20">
+        <nav id="mynavbar" class="navbar navbar-inverse navbar-fixed-top">
+            <div class = "container-fluid">
+                <div class="navbar-header">
+                    <a class = "navbar-brand">Road Safety Analysis</a>
+                </div>
+                <ul class = "nav navbar-nav navbar-right">
+                    <li class="active"><a href="#homePage" onclick=homepage()><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                    <li><a href="#createAccident" onclick=accidentdetails()>Report an accident</a></li>
+                    <li><a href="#visualization" onclick=analysis()>Visualizations</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="homePage" class="media">
+            <img src="{{ url_for('static', filename='p06vd8mk.jpeg') }}" width="100%" />
+        </div>
+        <div id="createAccident"  style="padding-top:70px">Accident Data
+        <div class="container-fluid">
+            <button type="button" onclick="createAccident()">Report an accident</button>
+            <script>
+			
+				function analysis() {
+					document.getElementById("homePage").style.display ="none"
+					document.getElementById("visualization").style.display ="block"
+					document.getElementById("createAccident").style.display ="none"
+				}
+				
+				function accidentdetails() {
+					document.getElementById("homePage").style.display ="none"
+					document.getElementById("visualization").style.display ="none"
+					document.getElementById("createAccident").style.display ="block"
+				}
+				
+				function homepage() {
+					document.getElementById("homePage").style.display ="block"
+					document.getElementById("visualization").style.display ="none"
+					document.getElementById("createAccident").style.display ="none"
+				}
+				
+			
+                function createAccident() {
+                    
+					var form = document.createElement("form");
+					form.setAttribute("method", "POST");
+					form.setAttribute("name", "new_accident");
+					form.setAttribute("action", "http://localhost:5000/insert");
+					form.setAttribute("id", "reportaccident");
+					
+					var input_acc_id = document.createElement("input");
+					input_acc_id.setAttribute("type", "text");
+					input_acc_id.setAttribute("disabled", "true");
+					input_acc_id.setAttribute("name", "acc_id");
+					input_acc_id.setAttribute("class", "form-control");
+					
+					d = new Date();
+					
+					var input_time = document.createElement("input");
+					input_time.setAttribute("type", "time");
+					input_time.setAttribute("name", "time_of_accident");
+					input_time.setAttribute("form", "reportaccident");					
+					time_now = d.getHours() +":"+ d.getMinutes();
+					time_now = time_now.padStart(5,0);
+					input_time.setAttribute("value", time_now);
+					input_time.setAttribute("class", "form-control");
+					
+					var input_date = document.createElement("input");
+					input_date.setAttribute("type", "Date");
+					input_date.setAttribute("name", "date_of_accident");
+					input_date.setAttribute("form", "reportaccident");					
+					today = d.getFullYear()+"-"+(d.getMonth()+1).toString().padStart(2,0)+"-"+d.getDate()
+					input_date.setAttribute("value", today);
+					input_date.setAttribute("class", "form-control");
+					
+					var input_city = document.createElement("input");
+					input_city.setAttribute("type", "text");
+					input_city.setAttribute("name", "city");
+					input_city.setAttribute("form", "reportaccident");
+					input_city.setAttribute("class", "form-control");
+										
+					var input_state = document.createElement("input");
+					input_state.setAttribute("type", "text");
+					input_state.setAttribute("name", "state");
+					input_state.setAttribute("form", "reportaccident");
+					input_state.setAttribute("class", "form-control");
+					
+					var input_postcode = document.createElement("input");
+					input_postcode.setAttribute("type", "text");
+					input_postcode.setAttribute("name", "postcode");
+					input_postcode.setAttribute("form", "reportaccident");
+					input_postcode.setAttribute("class", "form-control");
+					
+					var sel_police_presence = document.createElement("select");
+					sel_police_presence.setAttribute("name", "police_presence");
+					sel_police_presence.setAttribute("form", "reportaccident");
+					sel_police_presence.setAttribute("class", "form-control");
+					
+					var opt_pol_pre_1 = document.createElement("option")
+					opt_pol_pre_1.setAttribute("value", "0");
+					opt_pol_pre_1.setAttribute("label", "No");
+					
+					var opt_pol_pre_2 = document.createElement("option")
+					opt_pol_pre_2.setAttribute("value", "1");
+					opt_pol_pre_2.setAttribute("label", "Yes");
+					
+					sel_police_presence.appendChild(opt_pol_pre_1);
+					sel_police_presence.appendChild(opt_pol_pre_2);
+					
+					var input_acc_severity= document.createElement("input");
+					input_acc_severity.setAttribute("type", "number");
+					input_acc_severity.setAttribute("name", "accident_severity");
+					input_acc_severity.setAttribute("min", "1");
+					input_acc_severity.setAttribute("max", "3");
+					input_acc_severity.setAttribute("form", "reportaccident");
+					input_acc_severity.setAttribute("class", "form-control");
+					
+					var sel_light_cond = document.createElement("select");
+					sel_light_cond.setAttribute("name", "light_conditions");
+					sel_light_cond.setAttribute("form", "reportaccident");
+					sel_light_cond.setAttribute("class", "form-control");
+					
+					var opt_light_1 = document.createElement("option")
+					opt_light_1.setAttribute("value", "Daylight: Street light present");
+					opt_light_1.setAttribute("label", "Daylight: Street light present");
+					
+					var opt_light_2 = document.createElement("option")
+					opt_light_2.setAttribute("value", "Darkness: Street lights present and lit");
+					opt_light_2.setAttribute("label", "Darkness: Street lights present and lit");
+					
+					var opt_light_3 = document.createElement("option")
+					opt_light_3.setAttribute("value", "Darkness: Street lights present but unlit");
+					opt_light_3.setAttribute("label", "Darkness: Street lights present but unlit");
+					
+					var opt_light_4 = document.createElement("option")
+					opt_light_4.setAttribute("value", "Darkness: No street lighting");
+					opt_light_4.setAttribute("label", "Darkness: No street lighting");
+					
+					var opt_light_5 = document.createElement("option")
+					opt_light_5.setAttribute("value", "Darkness: Street lighting unknown");
+					opt_light_5.setAttribute("label", "Darkness: Street lighting unknown");
+					
+					sel_light_cond.appendChild(opt_light_1);
+					sel_light_cond.appendChild(opt_light_2);
+					sel_light_cond.appendChild(opt_light_3);
+					sel_light_cond.appendChild(opt_light_4);
+					sel_light_cond.appendChild(opt_light_5);
+					
+					var sel_weather_cond = document.createElement("select");
+					sel_weather_cond.setAttribute("name", "weather_conditions");
+					sel_weather_cond.setAttribute("form", "reportaccident");
+					sel_weather_cond.setAttribute("class", "form-control");
+					
+					var opt_weather_1 = document.createElement("option")
+					opt_weather_1.setAttribute("value", "Fine with high winds");
+					opt_weather_1.setAttribute("label", "Fine with high winds");
+					
+					var opt_weather_2 = document.createElement("option")
+					opt_weather_2.setAttribute("value", "Fine without high winds");
+					opt_weather_2.setAttribute("label", "Fine without high winds");
+					
+					var opt_weather_3 = document.createElement("option")
+					opt_weather_3.setAttribute("value", "Raining with high winds");
+					opt_weather_3.setAttribute("label", "Raining with high winds");
+					
+					var opt_weather_4 = document.createElement("option")
+					opt_weather_4.setAttribute("value", "Raining without high winds");
+					opt_weather_4.setAttribute("label", "Raining without high winds");
+					
+					var opt_weather_5 = document.createElement("option")
+					opt_weather_5.setAttribute("value", "Snowing with high winds");
+					opt_weather_5.setAttribute("label", "Snowing with high winds");
+					
+					var opt_weather_6 = document.createElement("option")
+					opt_weather_6.setAttribute("value", "Snowing without high winds");
+					opt_weather_6.setAttribute("label", "Snowing without high winds");
+					
+					var opt_weather_7 = document.createElement("option")
+					opt_weather_7.setAttribute("value", "Fog or mist");
+					opt_weather_7.setAttribute("label", "Fog or mist");
+					
+					var opt_weather_8 = document.createElement("option")
+					opt_weather_8.setAttribute("value", "Other");
+					opt_weather_8.setAttribute("label", "Other");
+					
+					sel_weather_cond.appendChild(opt_weather_1);
+					sel_weather_cond.appendChild(opt_weather_2);
+					sel_weather_cond.appendChild(opt_weather_3);
+					sel_weather_cond.appendChild(opt_weather_4);
+					sel_weather_cond.appendChild(opt_weather_5);
+					sel_weather_cond.appendChild(opt_weather_6);
+					sel_weather_cond.appendChild(opt_weather_7);
+					sel_weather_cond.appendChild(opt_weather_8);
+					
+					var sel_road_cond = document.createElement("select");
+					sel_road_cond.setAttribute("name", "road_conditions");
+					sel_road_cond.setAttribute("form", "reportaccident");
+					sel_road_cond.setAttribute("class", "form-control");
+					
+					var opt_road_1 = document.createElement("option")
+					opt_road_1.setAttribute("value", "Dry");
+					opt_road_1.setAttribute("label", "Dry");
+					
+					var opt_road_2 = document.createElement("option")
+					opt_road_2.setAttribute("value", "Wet/Damp");
+					opt_road_2.setAttribute("label", "Wet/Damp");
+					
+					var opt_road_3 = document.createElement("option")
+					opt_road_3.setAttribute("value", "Frost/Ice");
+					opt_road_3.setAttribute("label", "Frost/Ice");
+					
+					var opt_road_4 = document.createElement("option")
+					opt_road_4.setAttribute("value", "Snow");
+					opt_road_4.setAttribute("label", "Snow");
+					
+					var opt_road_5 = document.createElement("option")
+					opt_road_5.setAttribute("value", "Flood (Over 3cm of water)");
+					opt_road_5.setAttribute("label", "Flood (Over 3cm of water)");
+					
+					sel_road_cond.appendChild(opt_road_1);
+					sel_road_cond.appendChild(opt_road_2);
+					sel_road_cond.appendChild(opt_road_3);
+					sel_road_cond.appendChild(opt_road_4);
+					sel_road_cond.appendChild(opt_road_5);
+					
+					var input_casualties = document.createElement("input");
+					input_casualties.setAttribute("type", "number");
+					input_casualties.setAttribute("name", "number_of_casualties");
+					input_casualties.setAttribute("min", "0");
+					input_casualties.setAttribute("form", "reportaccident");
+					input_casualties.setAttribute("class", "form-control");
+					
+					var input_submit = document.createElement("input");
+					input_submit.setAttribute("type", "submit");
+					input_submit.setAttribute("value", "Report");
+					input_submit.setAttribute("form", "reportaccident");
+					
+					var table = document.getElementById("accidentTable");
+					var row = table.insertRow(1);
+					<!-- var row = document.createElement("tr"); -->
+					<!-- table.appendChild(row); -->
+					row.appendChild(form);
+								
+					<!-- var acc_id = document.createElement("td"); -->
+					<!-- var time = document.createElement("td"); -->
+					<!-- var date = document.createElement("td"); -->
+					<!-- var city = document.createElement("td"); -->
+                    <!-- var state = document.createElement("td"); -->
+                    <!-- var postcode = document.createElement("td"); -->
+                    <!-- var police_presence = document.createElement("td"); -->
+                    <!-- var accident_severity = document.createElement("td") ; -->
+					<!-- var light_cond = document.createElement("td"); -->
+					<!-- var weather_cond = document.createElement("td"); -->
+					<!-- var road_cond = document.createElement("td");	 -->
+					<!-- var casualties = document.createElement("td");	 -->
+					<!-- var submit = document.createElement("td"); -->
+					
+					<!-- form.appendChild(input_acc_id); -->
+					<!-- form.appendChild(input_time); -->
+					<!-- form.appendChild(input_date); -->
+					<!-- form.appendChild(input_city); -->
+					<!-- form.appendChild(input_state); -->
+					<!-- form.appendChild(input_postcode); -->
+					<!-- form.appendChild(sel_police_presence); -->
+					<!-- form.appendChild(input_acc_severity); -->
+					<!-- form.appendChild(sel_light_cond); -->
+					<!-- form.appendChild(sel_weather_cond); -->
+					<!-- form.appendChild(sel_road_cond); -->
+					<!-- form.appendChild(input_casualties); -->
+					<!-- form.appendChild(input_submit); -->
+					
+									
+					var acc_id = row.insertCell(0);
+					var time = row.insertCell(1);
+					var date = row.insertCell(2);
+					var city = row.insertCell(3);
+                    var state = row.insertCell(4);
+                    var postcode = row.insertCell(5);
+                    var police_presence = row.insertCell(6);
+                    var accident_severity = row.insertCell(7); 
+					var light_cond = row.insertCell(8);	
+					var road_cond = row.insertCell(9);	
+					var weather_cond = row.insertCell(10);	
+					var casualties = row.insertCell(11);	
+					var submit = row.insertCell(12);
+					
+					acc_id.appendChild(input_acc_id);
+					time.appendChild(input_time);
+					date.appendChild(input_date);
+					city.appendChild(input_city);
+					state.appendChild(input_state);
+					postcode.appendChild(input_postcode);
+					police_presence.appendChild(sel_police_presence);
+					accident_severity.appendChild(input_acc_severity);
+					light_cond.appendChild(sel_light_cond);
+					weather_cond.appendChild(sel_weather_cond);
+					road_cond.appendChild(sel_road_cond);
+					casualties.appendChild(input_casualties);
+					submit.appendChild(input_submit);
+
+					<!-- form.appendChild(acc_id); -->
+					<!-- form.appendChild(time); -->
+					<!-- form.appendChild(date); -->
+					<!-- form.appendChild(city); -->
+					<!-- form.appendChild(state); -->
+					<!-- form.appendChild(postcode); -->
+					<!-- form.appendChild(police_presence); -->
+					<!-- form.appendChild(accident_severity); -->
+					<!-- form.appendChild(light_cond); -->
+					<!-- form.appendChild(weather_cond); -->
+					<!-- form.appendChild(road_cond); -->
+					<!-- form.appendChild(casualties); -->
+					<!-- form.appendChild(submit); -->
+					
+					<!-- document.getElementsByTagName("body")[0].appendChild(form); -->
+					                 
+                }
+				
+				function updateAccident(acc_id) {
+					var tr_id = "tr_" + acc_id
+					var edit_tr = document.getElementById(tr_id);
+					
+					var upd_form = document.createElement("form");
+					
+					upd_form.setAttribute("method", "POST");
+					upd_form.setAttribute("name", "upd_accident");
+					upd_form.setAttribute("action", "http://localhost:5000/update");
+					<!-- upd_form.setAttribute("action", "result.html"); -->
+					upd_form.setAttribute("id", "updateaccident");
+					
+					edit_tr.appendChild(upd_form);
+					<!-- window.prompt("Editing "+tr_id, edit_tr); -->
+					
+					var data = edit_tr.children
+					
+					var td_acc_id = document.createElement("td");
+					var chg_acc_id = document.createElement("input");
+					chg_acc_id.setAttribute("type", "text");
+					chg_acc_id.setAttribute("readonly", "True")
+					chg_acc_id.setAttribute("name", "accident_id");
+					chg_acc_id.setAttribute("value", data[0].innerHTML)
+					chg_acc_id.setAttribute("form", "updateaccident");
+					chg_acc_id.setAttribute("class", "form-control");
+					td_acc_id.appendChild(chg_acc_id)
+					edit_tr.replaceChild(td_acc_id, data[0])
+					
+					
+					var td_time = document.createElement("td");
+					var chg_time = document.createElement("input");
+					chg_time.setAttribute("type", "time");
+					existing_time = data[1].innerHTML
+					existing_time = existing_time.slice(0,existing_time.length-3)
+					existing_time = existing_time.padStart(5,0)
+					chg_time.setAttribute("value", existing_time)
+					chg_time.setAttribute("name", "time_of_accident")
+					chg_time.setAttribute("form", "updateaccident");
+					chg_time.setAttribute("class", "form-control");
+					td_time.appendChild(chg_time)
+					edit_tr.replaceChild(td_time, data[1])
+
+
+					var td_date = document.createElement("td");
+					var chg_date = document.createElement("input");
+					chg_date.setAttribute("type", "Date");
+					chg_date.setAttribute("name", "date_of_accident");
+					chg_date.setAttribute("value", data[2].innerHTML);
+					chg_date.setAttribute("form", "updateaccident");
+					chg_date.setAttribute("class", "form-control");
+					td_date.appendChild(chg_date)
+					edit_tr.replaceChild(td_date, data[2])
+					
+					
+					var td_city = document.createElement("td");
+					var chg_city = document.createElement("input");
+					chg_city.setAttribute("type", "text");
+					chg_city.setAttribute("name", "city");
+					chg_city.setAttribute("value", data[3].innerHTML)
+					chg_city.setAttribute("form", "updateaccident");
+					chg_city.setAttribute("class", "form-control");
+					td_city.appendChild(chg_city)
+					edit_tr.replaceChild(td_city, data[3])
+					
+					
+					var td_state = document.createElement("td");
+					var chg_state = document.createElement("input");
+					chg_state.setAttribute("type", "text");
+					chg_state.setAttribute("name", "state");
+					chg_state.setAttribute("value", data[4].innerHTML)
+					chg_state.setAttribute("form", "updateaccident");
+					chg_state.setAttribute("class", "form-control");
+					td_state.appendChild(chg_state)
+					edit_tr.replaceChild(td_state, data[4])
+					
+					
+					var td_postcode = document.createElement("td");
+					var chg_postcode = document.createElement("input");
+					chg_postcode.setAttribute("type", "text");
+					chg_postcode.setAttribute("name", "postcode");
+					chg_postcode.setAttribute("value", data[5].innerHTML)
+					chg_postcode.setAttribute("form", "updateaccident");
+					chg_postcode.setAttribute("class", "form-control");
+					td_postcode.appendChild(chg_postcode)
+					edit_tr.replaceChild(td_postcode, data[5])
+					
+					
+					var td_police_presence = document.createElement("td");
+					var sel_police_presence = document.createElement("select");
+					sel_police_presence.setAttribute("name", "police_presence");
+					sel_police_presence.setAttribute("form", "updateaccident");
+					sel_police_presence.setAttribute("class", "form-control");
+					
+					var opt_pol_pre_1 = document.createElement("option")
+					opt_pol_pre_1.setAttribute("value", "0");
+					opt_pol_pre_1.setAttribute("label", "No");
+					
+					var opt_pol_pre_2 = document.createElement("option")
+					opt_pol_pre_2.setAttribute("value", "1");
+					opt_pol_pre_2.setAttribute("label", "Yes");
+					
+					sel_police_presence.appendChild(opt_pol_pre_1);
+					sel_police_presence.appendChild(opt_pol_pre_2);
+					td_police_presence.appendChild(sel_police_presence);
+					
+					police_presence_children = sel_police_presence.children;
+					
+					for (let i=0; i<police_presence_children.length; i++) {
+						child = police_presence_children[i];
+						if (child.getAttribute("label") == data[6].innerHTML) {
+							child.setAttribute("selected", "True");
+							break
+						}
+					}
+					
+					edit_tr.replaceChild(td_police_presence, data[6])
+					
+					
+					var td_acc_sev = document.createElement("td");
+					var chg_acc_sev = document.createElement("input");
+					chg_acc_sev.setAttribute("type", "number");
+					chg_acc_sev.setAttribute("name", "accident_severity");
+					chg_acc_sev.setAttribute("form", "updateaccident");
+					chg_acc_sev.setAttribute("value", data[7].innerHTML);
+					chg_acc_sev.setAttribute("class", "form-control");
+					td_acc_sev.appendChild(chg_acc_sev);
+					edit_tr.replaceChild(td_acc_sev, data[7])
+					
+					
+					var td_light_cond = document.createElement("td");
+					var sel_light_cond = document.createElement("select");
+					sel_light_cond.setAttribute("name", "light_conditions");
+					sel_light_cond.setAttribute("form", "updateaccident");
+					sel_light_cond.setAttribute("class", "form-control");
+					
+					var opt_light_1 = document.createElement("option")
+					opt_light_1.setAttribute("value", "Daylight: Street light present");
+					opt_light_1.setAttribute("label", "Daylight: Street light present");
+					
+					var opt_light_2 = document.createElement("option")
+					opt_light_2.setAttribute("value", "Darkness: Street lights present and lit");
+					opt_light_2.setAttribute("label", "Darkness: Street lights present and lit");
+					
+					var opt_light_3 = document.createElement("option")
+					opt_light_3.setAttribute("value", "Darkness: Street lights present but unlit");
+					opt_light_3.setAttribute("label", "Darkness: Street lights present but unlit");
+					
+					var opt_light_4 = document.createElement("option")
+					opt_light_4.setAttribute("value", "Darkness: No street lighting");
+					opt_light_4.setAttribute("label", "Darkness: No street lighting");
+					
+					var opt_light_5 = document.createElement("option")
+					opt_light_5.setAttribute("value", "Darkness: Street lighting unknown");
+					opt_light_5.setAttribute("label", "Darkness: Street lighting unknown");
+					
+					sel_light_cond.appendChild(opt_light_1);
+					sel_light_cond.appendChild(opt_light_2);
+					sel_light_cond.appendChild(opt_light_3);
+					sel_light_cond.appendChild(opt_light_4);
+					sel_light_cond.appendChild(opt_light_5);
+					td_light_cond.appendChild(sel_light_cond);
+					
+					light_children = sel_light_cond.children;
+					
+					for (let i=0; i<light_children.length; i++) {
+						child = light_children[i];
+						if (child.getAttribute("value") == data[8].innerHTML) {
+							child.setAttribute("selected", "True");
+							break
+						}
+					}
+					
+					<!-- sel_light_cond.setAttribute("value", data[8].innerHTML);					 -->
+					edit_tr.replaceChild(td_light_cond, data[8])
+					
+					
+					var td_road_cond = document.createElement("td");
+					var sel_road_cond = document.createElement("select");
+					sel_road_cond.setAttribute("name", "road_conditions");
+					sel_road_cond.setAttribute("form", "updateaccident");
+					sel_road_cond.setAttribute("class", "form-control");
+					
+					var opt_road_1 = document.createElement("option")
+					opt_road_1.setAttribute("value", "Dry");
+					opt_road_1.setAttribute("label", "Dry");
+					
+					var opt_road_2 = document.createElement("option")
+					opt_road_2.setAttribute("value", "Wet/Damp");
+					opt_road_2.setAttribute("label", "Wet/Damp");
+					
+					var opt_road_3 = document.createElement("option")
+					opt_road_3.setAttribute("value", "Frost/Ice");
+					opt_road_3.setAttribute("label", "Frost/Ice");
+					
+					var opt_road_4 = document.createElement("option")
+					opt_road_4.setAttribute("value", "Snow");
+					opt_road_4.setAttribute("label", "Snow");
+					
+					var opt_road_5 = document.createElement("option")
+					opt_road_5.setAttribute("value", "Flood (Over 3cm of water)");
+					opt_road_5.setAttribute("label", "Flood (Over 3cm of water)");
+					
+					sel_road_cond.appendChild(opt_road_1);
+					sel_road_cond.appendChild(opt_road_2);
+					sel_road_cond.appendChild(opt_road_3);
+					sel_road_cond.appendChild(opt_road_4);
+					sel_road_cond.appendChild(opt_road_5);
+					td_road_cond.appendChild(sel_road_cond);
+					
+					road_children = sel_road_cond.children;
+					
+					for (let i=0; i<road_children.length; i++) {
+						child = road_children[i];
+						if (child.getAttribute("value") == data[9].innerHTML) {
+							child.setAttribute("selected", "True");
+							break
+						}
+					}
+					
+					<!-- sel_road_cond.setAttribute("value", data[9].innerHTML); -->
+					edit_tr.replaceChild(td_road_cond, data[9]);
+					
+					
+					var td_weather_cond = document.createElement("td");
+					var sel_weather_cond = document.createElement("select");
+					sel_weather_cond.setAttribute("name", "weather_conditions");
+					sel_weather_cond.setAttribute("form", "updateaccident");
+					sel_weather_cond.setAttribute("class", "form-control");
+					
+					var opt_weather_1 = document.createElement("option")
+					opt_weather_1.setAttribute("value", "Fine with high winds");
+					opt_weather_1.setAttribute("label", "Fine with high winds");
+					
+					var opt_weather_2 = document.createElement("option")
+					opt_weather_2.setAttribute("value", "Fine without high winds");
+					opt_weather_2.setAttribute("label", "Fine without high winds");
+					
+					var opt_weather_3 = document.createElement("option")
+					opt_weather_3.setAttribute("value", "Raining with high winds");
+					opt_weather_3.setAttribute("label", "Raining with high winds");
+					
+					var opt_weather_4 = document.createElement("option")
+					opt_weather_4.setAttribute("value", "Raining without high winds");
+					opt_weather_4.setAttribute("label", "Raining without high winds");
+					
+					var opt_weather_5 = document.createElement("option")
+					opt_weather_5.setAttribute("value", "Snowing with high winds");
+					opt_weather_5.setAttribute("label", "Snowing with high winds");
+					
+					var opt_weather_6 = document.createElement("option")
+					opt_weather_6.setAttribute("value", "Snowing without high winds");
+					opt_weather_6.setAttribute("label", "Snowing without high winds");
+					
+					var opt_weather_7 = document.createElement("option")
+					opt_weather_7.setAttribute("value", "Fog or mist");
+					opt_weather_7.setAttribute("label", "Fog or mist");
+					
+					var opt_weather_8 = document.createElement("option")
+					opt_weather_8.setAttribute("value", "Other");
+					opt_weather_8.setAttribute("label", "Other");
+					
+					sel_weather_cond.appendChild(opt_weather_1);
+					sel_weather_cond.appendChild(opt_weather_2);
+					sel_weather_cond.appendChild(opt_weather_3);
+					sel_weather_cond.appendChild(opt_weather_4);
+					sel_weather_cond.appendChild(opt_weather_5);
+					sel_weather_cond.appendChild(opt_weather_6);
+					sel_weather_cond.appendChild(opt_weather_7);
+					sel_weather_cond.appendChild(opt_weather_8);
+					td_weather_cond.appendChild(sel_weather_cond);
+					
+					weather_children = sel_weather_cond.children;
+					
+					for (let i=0; i<weather_children.length; i++) {
+						child = weather_children[i];
+						if (child.getAttribute("value") == data[10].innerHTML) {
+							child.setAttribute("selected", "True");
+							break
+						}
+					}
+					
+					<!-- sel_weather_cond.setAttribute("value", data[10].innerHTML); -->
+					edit_tr.replaceChild(td_weather_cond, data[10]);
+					
+					var td_casualties = document.createElement("td");
+					var chg_casualties = document.createElement("input");
+					chg_casualties.setAttribute("type", "number");
+					chg_casualties.setAttribute("name", "number_of_casualties");
+					chg_casualties.setAttribute("value", data[11].innerHTML);
+					chg_casualties.setAttribute("class", "form-control");
+					chg_casualties.setAttribute("form", "updateaccident");
+					td_casualties.appendChild(chg_casualties);
+					edit_tr.replaceChild(td_casualties, data[11]);
+					
+					var td_save = document.createElement("td");
+					var save_button = document.createElement("button");
+					save_button.setAttribute("class","btn btn-sm rounded-0");
+					save_button.setAttribute("type", "submit");
+					save_button.setAttribute("data-toggle", "tooltip");
+					save_button.setAttribute("data-placement", "top");
+					save_button.setAttribute("title", "Save");
+					save_button.setAttribute("form", "updateaccident");
+					
+					var save_span = document.createElement("span");
+					save_span.setAttribute("class", "glyphicon glyphicon-saved");
+					save_button.appendChild(save_span);
+					td_save.appendChild(save_button);
+					edit_tr.replaceChild(td_save, data[12]);
+					<!-- var row = edit_cell.parentNode.parentNode.parentNode; -->
+					
+					<!-- var td_id = row.firstElementChild.innerHTML -->
+					
+					
+					<!-- window.prompt("Editing ID", edit_tr.children.length); -->
+				
+				}
+				
+				
+				function deleteAccident(acc_id) {
+                    var tr_id = "tr_" + acc_id
+					var del_tr = document.getElementById(tr_id);
+					
+					var data = del_tr.children
+					
+					var del_form = document.createElement("form");
+					del_form.setAttribute("method", "POST");
+					del_form.setAttribute("name", "delete_accident");
+					del_form.setAttribute("action", "http://localhost:5000/delete");
+					del_form.setAttribute("id", "deleteaccident");
+					
+					del_tr.appendChild(del_form);
+					
+					var td_acc_id = document.createElement("td");
+					var del_acc_id = document.createElement("input");
+					del_acc_id.setAttribute("type", "text");
+					del_acc_id.setAttribute("readonly", "True")
+					del_acc_id.setAttribute("name", "accident_id");
+					del_acc_id.setAttribute("value", data[0].innerHTML)
+					del_acc_id.setAttribute("class", "form-control");
+					del_acc_id.setAttribute("form", "deleteaccident");
+					
+					td_acc_id.appendChild(del_acc_id)
+					del_tr.replaceChild(td_acc_id, data[0])
+						
+					var td_delete = document.createElement("td");
+					var del_button = document.createElement("input");
+					del_button.setAttribute("type", "submit");
+					del_button.setAttribute("value", "Confirm")
+					del_button.setAttribute("class","btn btn-danger")
+					del_button.setAttribute("form", "deleteaccident");
+					
+					td_delete.appendChild(del_button);
+					del_tr.replaceChild(td_delete, data[12]);
+					
+					}
+            </script>
+            <table class = "table table-bordered table-striped" id="accidentTable">
+                <thead>
+                    <th>Accident ID</th>
+                    <th>Time of accident</th>
+                    <th>Date of accident</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Postcode</th>
+                    <th>Police Presence</th>
+                    <th>Accident Severity</th>
+					<th>Light Conditions</th>
+					<th>Road Conditions</th>
+					<th>Weather Conditions</th>
+					<th>Casualties</th>
+                    <th>Actions</th>
+                </thead>
+				<!-- <tr id = "tr_524283"> -->
+                  <!-- <td>524283</td> -->
+                  <!-- <td>12:53:00</td> -->
+                  <!-- <td>2022-07-23</td> -->
+                  <!-- <td>None</td> -->
+                  <!-- <td>None</td> -->
+                  <!-- <td>None</td> -->
+                  <!-- <td>0</td> -->
+                  <!-- <td>0</td> -->
+                  <!-- <td>Daylight: Street light present</td> -->
+                  <!-- <td>Wet/Damp</td> -->
+                  <!-- <td>Snowing with high winds</td> -->
+				  <!-- <td>2</td> -->
+                  <!-- <td> -->
+                    <!-- <button class="btn btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" id="edit_524283"  onclick=updateAccident(524283) ><span class="glyphicon glyphicon-pencil"></span></i></button> -->
+					<!-- <button class="btn btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" id="delete_524283"  onclick=deleteAccident(524283) ><span class="glyphicon glyphicon-trash"></span></i></button> -->
+					
+                  <!-- </td> -->
+				  
+                {% for accident_id,time,date,city,state,postcode,police_presence,accident_severity,light_conditions,road_conditions,weather_conditions,casualties in accident %}
+                <tr id = "tr_{{accident_id}}">
+                  <td>{{ accident_id }}</td>
+                  <td>{{ time }}</td>
+                  <td>{{ date }}</td>
+                  <td>{{ city }}</td>
+                  <td>{{ state }}</td>
+                  <td>{{ postcode }}</td>
+                  <td>{{ police_presence }}</td>
+                  <td>{{ accident_severity }}</td>
+                  <td>{{ light_conditions }}</td>
+                  <td>{{ road_conditions }}</td>
+                  <td>{{ weather_conditions }}</td>
+				  <td>{{ casualties }}</td>
+                  <td>
+                    
+                    <ul class="list-inline m-0">
+                      <li class="list-inline-item">
+                        <button class="btn btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" id= {{ accident_id }} onclick=updateAccident({{ accident_id }}) ><span class="glyphicon glyphicon-pencil"></span></i></button>
+					  </li>
+                      <li class="list-inline-item">
+                        <button class="btn btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"  id= {{ accident_id }} onclick=deleteAccident({{ accident_id }}) ><span class="glyphicon glyphicon-trash"></span></i></button>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                {% endfor %} 
+            </table>
+        </div>
+		</div>
+        <div id="visualization" style="padding-top:70px" }>
+		<div class="col-sm-3">
+		<h3><center>Select a visualization</h3>
+        <form method="POST" action="http://localhost:5000/visualization">
+            <button type="submit" class="btn btn-block btn-info" name="YearOnYearPlot">Accidents over the years</button>
+            <br>
+            <button type="submit" class="btn btn-info btn-block" name="PolicePlot">Police Response based on accident severity</button>
+            <br>
+            <button type="submit" class="btn btn-block btn-info" name="WeatherCondPlot">Accident trends based on Weather Conditions</button>
+            <br>
+            <button type="submit" class="btn btn-block btn-info" name="LightCondPlot">Accident trends based on Light Conditions</button>
+            <br>
+            <button type="submit" class="btn btn-block btn-info" name="TimePlot">Accident trends based on Time of Day</button>
+            <br>                                                
+            <button type="submit" class="btn btn-block btn-info" name="DayPlot">Accident trends based on Day of Week</button>
+            <br>                                                
+            <button type="submit" class="btn btn-block btn-info" name="RoadHazardPlot">Accident caused by obstacles on the road</button>
+            <br>
+        </form>
+    </div>
+        <!-- <div class="content col-sm-9" id="light_plot"><img src="{{ url_for('static' , filename='light_plot.jpg') }}" width="100%"></div> -->
+        <div class="col-sm-9" id="light_plot"><img src="{{ url_for('static', filename='plot.jpg') }}" width="60%" height="40%" class="center"></div>
+		
+		</div>
+    </body>
+</html>
