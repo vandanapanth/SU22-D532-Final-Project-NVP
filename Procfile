@@ -1,1 +1,1 @@
-web: gunicorn road_flask:application
+web: gunicorn road_flask:application --port $PORT --host 0.0.0.0
