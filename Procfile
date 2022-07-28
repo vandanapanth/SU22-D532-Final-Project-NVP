@@ -1,1 +1,1 @@
-web: python road_flask.py
+worker: python road_flask.py
