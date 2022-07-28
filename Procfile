@@ -1,1 +1,1 @@
-web: python road_flask.py --port $PORT --host 0.0.0.0
+web: python road_flask.py
