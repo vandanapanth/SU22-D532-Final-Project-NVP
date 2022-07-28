@@ -1,1 +1,1 @@
-worker: python road_flask.py
+web: gunicorn road_flask:application
