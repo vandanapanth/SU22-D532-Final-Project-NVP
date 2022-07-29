@@ -81,7 +81,7 @@
 					var form = document.createElement("form");
 					form.setAttribute("method", "POST");
 					form.setAttribute("name", "new_accident");
-					form.setAttribute("action", "http://localhost:5000/insert");
+					form.setAttribute("action", "https://roadsafetyanalysis.herokuapp.com/insert");
 					form.setAttribute("id", "reportaccident");
 					
 					var input_acc_id = document.createElement("input");
@@ -360,7 +360,7 @@
 					
 					upd_form.setAttribute("method", "POST");
 					upd_form.setAttribute("name", "upd_accident");
-					upd_form.setAttribute("action", "http://localhost:5000/update");
+					upd_form.setAttribute("action", "https://roadsafetyanalysis.herokuapp.com/update");
 					<!-- upd_form.setAttribute("action", "result.html"); -->
 					upd_form.setAttribute("id", "updateaccident");
 					
@@ -679,7 +679,7 @@
 					var del_form = document.createElement("form");
 					del_form.setAttribute("method", "POST");
 					del_form.setAttribute("name", "delete_accident");
-					del_form.setAttribute("action", "http://localhost:5000/delete");
+					del_form.setAttribute("action", "https://roadsafetyanalysis.herokuapp.com/delete");
 					del_form.setAttribute("id", "deleteaccident");
 					
 					del_tr.appendChild(del_form);
@@ -776,7 +776,7 @@
         <div id="visualization" style="padding-top:70px" }>
 		<div class="col-sm-3">
 		<h3><center>Select a visualization</h3>
-        <form method="POST" action="http://localhost:5000/visualization">
+        <form method="POST" action="https://roadsafetyanalysis.herokuapp.com/visualization">
             <button type="submit" class="btn btn-block btn-info" name="YearOnYearPlot">Accidents over the years</button>
             <br>
             <button type="submit" class="btn btn-info btn-block" name="PolicePlot">Police Response based on accident severity</button>
